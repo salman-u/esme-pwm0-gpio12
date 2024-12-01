@@ -1,31 +1,23 @@
-# Nom du programme
-PROGRAM = esme-pwm-gpio12
+INSTALL_DIR ?= $(PWD)/.install
 
-# Options de compilation
-CC = gcc
-CFLAGS = -Wall -Wextra -O2
 
-# Répertoire d'installation par défaut
-INSTALL_DIR ?= ./.install
+PROG := esme-pwm-gpio12
+SCRIPT := esme-pwm
 
-# Liste des fichiers sources
-SOURCES = pwm_control.c
-OBJECTS = $(SOURCES:.c=.o)
 
-# Cible par défaut
-all: $(PROGRAM)
+OBJS := $(subst .c,.o, $(shell ls *.c))
 
-# Règle implicite pour créer l'exécutable
-$(PROGRAM): $(OBJECTS)
-	$(CC) $(CFLAGS) -o $@ $^
 
-# Installation
-install: $(PROGRAM)
-	mkdir -p $(INSTALL_DIR)
-	cp $(PROGRAM) $(INSTALL_DIR)
+all: $(PROG)
 
-# Nettoyage des fichiers générés
+$(PROG): $(OBJS)
+
 clean:
-	rm -f $(PROGRAM) $(OBJECTS)
+	-$(RM) -rf $(PROG) $(OBJS)
 
-.PHONY: all clean install
+install:
+	install -m 0755 -d $(INSTALL_DIR)/usr/bin
+	install -m 0755 $(PROG) $(INSTALL_DIR)/usr/bin
+	install -m 0755 -d $(INSTALL_DIR)/etc/init.d
+	install -m 0755 $(SCRIPT) $(INSTALL_DIR)/etc/init.d
+
